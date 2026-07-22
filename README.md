@@ -6,8 +6,6 @@
 
 ![Status](https://img.shields.io/badge/status-em%20construção-ff69b4)
 ![Platform](https://img.shields.io/badge/platform-Linux-ff1493)
-![Made with](https://img.shields.io/badge/feito%20com-💖-hotpink)
-
 
 </div>
 
