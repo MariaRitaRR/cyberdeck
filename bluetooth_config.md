@@ -1,6 +1,4 @@
-Aqui está o documento com a mesma estética rosa aplicada:
 
-```markdown
 <div align="center">
 
 # ⌨️ Teclado & Mouse Bluetooth via Terminal 🖱️
