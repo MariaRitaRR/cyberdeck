@@ -1,10 +1,29 @@
-# Conexão de Teclado e Mouse Bluetooth via Terminal (bluetoothctl)
+Aqui está o documento com a mesma estética rosa aplicada:
 
-## Contexto
+```markdown
+<div align="center">
 
-Este documento registra o processo de pareamento de um teclado Bluetooth e um mouse Bluetooth (BT5.2) no Raspberry Pi Zero 2W do cyberdeck, utilizando exclusivamente o terminal (`bluetoothctl`), sem interface gráfica.
+# ⌨️ Teclado & Mouse Bluetooth via Terminal 🖱️
 
-## 1. Diagnóstico inicial: adaptador Bluetooth bloqueado
+**Pareamento de periféricos BLE no cyberdeck usando `bluetoothctl`**
+
+![Device](https://img.shields.io/badge/device-Raspberry%20Pi%20Zero%202W-ff69b4)
+![Interface](https://img.shields.io/badge/interface-terminal%20only-ff1493)
+![Bluetooth](https://img.shields.io/badge/BLE-5.2-hotpink)
+
+*Sem interface gráfica, só charme e linha de comando* ✨
+
+</div>
+
+---
+
+## 💅 Contexto
+
+Este documento registra o processo de pareamento de um **teclado Bluetooth** e um **mouse Bluetooth (BT5.2)** no Raspberry Pi Zero 2W do cyberdeck, utilizando exclusivamente o terminal (`bluetoothctl`), sem interface gráfica. 🎀
+
+---
+
+## 🔍 1. Diagnóstico Inicial: Adaptador Bluetooth Bloqueado
 
 Ao tentar iniciar o `bluetoothctl` e ligar o rádio, os seguintes erros ocorreram:
 
@@ -16,13 +35,14 @@ SetDiscoveryFilter failed: org.bluez.Error.NotReady
 Failed to start discovery: org.bluez.Error.NotReady
 ```
 
-### Verificação com `rfkill`
+### 🌸 Verificação com `rfkill`
 
 ```bash
 rfkill list
 ```
 
 Resultado:
+
 ```
 0: hci0: Bluetooth
         Soft blocked: yes
@@ -34,7 +54,7 @@ Resultado:
 
 O adaptador Bluetooth (`hci0`) estava **soft blocked**, impedindo a ativação do rádio.
 
-### Correção
+### 💖 Correção
 
 ```bash
 sudo rfkill unblock bluetooth
@@ -42,9 +62,11 @@ sudo rfkill unblock bluetooth
 
 Após o desbloqueio, `hciconfig -a` confirmou o controlador ativo (`UP RUNNING`), com o firmware Broadcom BCM43430A1 carregado corretamente (`dmesg | grep -i bluetooth`).
 
-Também foi verificado que o arquivo `config.txt` **não** continha a linha `dtoverlay=disable-bt`, descartando essa causa alternativa.
+> 💡 Também foi verificado que o arquivo `config.txt` **não** continha a linha `dtoverlay=disable-bt`, descartando essa causa alternativa.
 
-## 2. Pareamento do teclado Bluetooth
+---
+
+## ⌨️ 2. Pareamento do Teclado Bluetooth
 
 Com o adaptador liberado, o processo padrão foi retomado:
 
@@ -56,13 +78,21 @@ power on
 scan on
 ```
 
-### Particularidade encontrada: endereço MAC rotativo (RPA)
+### 🎀 Particularidade: Endereço MAC Rotativo (RPA)
 
-O teclado (BLE) apresentou **endereços MAC diferentes a cada novo scan** (ex.: `54:46:6B:E3:A6:6C`, depois `54:46:6B:F3:8B:1D`, depois `54:46:6B:61:03:58`), causando falhas do tipo `Device ... not available` ao tentar parear com um endereço já expirado.
+O teclado (BLE) apresentou **endereços MAC diferentes a cada novo scan**:
 
-Isso é um comportamento comum em dispositivos **Bluetooth Low Energy (BLE)** que usam *Random Private Address* por privacidade — o endereço muda periodicamente enquanto o dispositivo não está pareado (com bond estabelecido).
+| Tentativa | Endereço MAC |
+|-----------|--------------|
+| 1ª | `54:46:6B:E3:A6:6C` |
+| 2ª | `54:46:6B:F3:8B:1D` |
+| 3ª | `54:46:6B:61:03:58` |
 
-**Solução:** parear imediatamente assim que o nome do dispositivo (`Bluetooth Keyboard`) aparecer no scan, sem esperar, usando o endereço mais recente exibido:
+Isso causava falhas do tipo `Device ... not available` ao tentar parear com um endereço já expirado.
+
+Esse é um comportamento comum em dispositivos **Bluetooth Low Energy (BLE)** que usam *Random Private Address* por privacidade — o endereço muda periodicamente enquanto o dispositivo não está pareado (com *bond* estabelecido).
+
+> 💖 **Solução:** parear imediatamente assim que o nome do dispositivo (`Bluetooth Keyboard`) aparecer no scan, sem esperar, usando o endereço mais recente exibido:
 
 ```bash
 scan off
@@ -71,9 +101,11 @@ trust <endereço_mais_recente>
 connect <endereço_mais_recente>
 ```
 
-O pareamento foi bem-sucedido nessa tentativa mais rápida.
+O pareamento foi bem-sucedido nessa tentativa mais rápida. ✅
 
-## 3. Pareamento do mouse Bluetooth (BT5.2 Mouse)
+---
+
+## 🖱️ 3. Pareamento do Mouse Bluetooth (BT5.2)
 
 Processo análogo, com o mouse identificado no scan como `BT5.2 Mouse` (endereço `2A:09:79:00:01:10`):
 
@@ -85,14 +117,16 @@ connect 2A:09:79:00:01:10
 
 O pareamento expôs o perfil completo de **HID sobre GATT (BLE HID)**, incluindo:
 
-- Generic Access / Generic Attribute Profile
-- Device Information (Manufacturer Name, PnP ID)
-- Human Interface Device (Protocol Mode, Report, Boot Mouse Input Report, HID Information)
-- Battery Service (Battery Level, HID Control Point)
+- 🌸 Generic Access / Generic Attribute Profile
+- 🌸 Device Information (Manufacturer Name, PnP ID)
+- 🌸 Human Interface Device (Protocol Mode, Report, Boot Mouse Input Report, HID Information)
+- 🌸 Battery Service (Battery Level, HID Control Point)
 
-Resultado: `Pairing successful`.
+Resultado: `Pairing successful` 💕
 
-## 4. Verificação final dos dispositivos conectados
+---
+
+## 4. Verificação Final dos Dispositivos Conectados
 
 Confirmação via `/proc/bus/input/devices`:
 
@@ -112,7 +146,9 @@ H: Handlers=sysrq kbd leds event4
 
 Ambos os dispositivos foram reconhecidos corretamente pelo kernel, cada um com seu handler de evento (`event2`, `event3`, `event4`) e o mouse adicionalmente registrado como `mouse0`.
 
-## Resumo do fluxo de comandos (referência rápida)
+---
+
+## 🎀 Resumo do Fluxo de Comandos (Referência Rápida)
 
 ```bash
 # Preparação
@@ -137,7 +173,12 @@ exit
 cat /proc/bus/input/devices
 ```
 
-## Observações para o artigo
+---
 
-- O caso do endereço MAC rotativo do teclado BLE é um ponto interessante para documentar como desafio prático enfrentado durante a integração de periféricos no cyberdeck, já que foge do fluxo "padrão" normalmente descrito em tutoriais.
-- O `trust` aplicado a ambos os dispositivos garante reconexão automática em boots futuros, sem necessidade de repetir o pareamento.
+## 📝 Observações
+
+- 🎀 O caso do **endereço MAC rotativo** do teclado BLE é um ponto interessante para documentar como desafio prático enfrentado durante a integração de periféricos no cyberdeck, já que foge do fluxo "padrão" normalmente descrito em tutoriais.
+- 🎀 O `trust` aplicado a ambos os dispositivos garante **reconexão automática** em boots futuros, sem necessidade de repetir o pareamento.
+
+---
+
